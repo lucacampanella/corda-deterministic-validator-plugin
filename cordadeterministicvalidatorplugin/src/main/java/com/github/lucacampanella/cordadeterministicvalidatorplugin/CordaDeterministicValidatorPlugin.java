@@ -4,12 +4,18 @@ import org.gradle.api.*;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.DependencySubstitutions;
+import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.logging.Logger;
+import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.compile.JavaCompile;
 
 import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Paths;
+import java.util.Arrays;
 import java.util.Optional;
 
 public class CordaDeterministicValidatorPlugin implements Plugin<Project> {
@@ -25,10 +31,55 @@ public class CordaDeterministicValidatorPlugin implements Plugin<Project> {
         final Logger logger = project.getLogger();
         logger.info("Gradle version: {}", gradleVersion);
 
+        project.getRepositories().maven(mavenArtifactRepository ->
+                mavenArtifactRepository.setUrl("https://ci-artifactory.corda.r3cev.com/artifactory/corda-dev"));
 
-        final JavaCompile javaDeterministicCompileInternal = project.getTasks()
+
+        final Configuration deterministicJdkConf = project.getConfigurations().create("deterministicJdk");
+        deterministicJdkConf.getDependencies().add(
+                project.getDependencies().create("net.corda:deterministic-rt:latest.integration:api")
+        );
+
+        final Copy installJdkTask = project.getTasks()
+                .create("installJdk", Copy.class);
+
+        final File jdkHome = project.file(project.getRootDir().getPath() + "/jdk");
+        final File rtJar = project.file(jdkHome.getPath() + "/jre/lib/rt.jar");
+
+        installJdkTask.getOutputs().dir(jdkHome.getPath());
+        installJdkTask.from(deterministicJdkConf).rename("deterministic-rt-(.*).jar", "rt.jar");
+        installJdkTask.into(project.file(jdkHome.getPath() +  "/jre/lib").getPath());
+        installJdkTask.doLast(task -> {
+            final String eol = System.getProperty("line.separator");
+            FileWriter fileWriter = null;
+            try {
+                fileWriter = new FileWriter(project.file(jdkHome.getPath() + "/release"), false);
+                fileWriter.write("JAVA_VERSION=\"1.8.0_172\"" + eol);
+            } catch (IOException e) {
+                throw new GradleException("Could not write to file", e);
+            }
+            // false to overwrite.
+            project.file(jdkHome.getPath() + "/bin").mkdir();
+
+            try {
+                final File javac = project.file(jdkHome.getPath() + "/bin/javac");
+                fileWriter = new FileWriter(javac, false);
+                fileWriter.write("#!/bin/sh\necho \"javac 1.8.0_172\"\n");
+                javac.setExecutable(true, false);
+
+            } catch (IOException e) {
+                throw new GradleException("Could not write to file", e);
+            }
+        });
+
+
+
+        final JavaCompile javaDeterministicCompileTask = project.getTasks()
                 .create("javaDeterministicCompile", JavaCompile.class);
         final Configuration deterministicImplementation = project.getConfigurations().create("deterministicImplementation");
+
+        javaDeterministicCompileTask.dependsOn(installJdkTask);
+        javaDeterministicCompileTask.getOptions().setCompilerArgs(Arrays.asList("-bootclasspath", rtJar.getPath()));
 
         project.afterEvaluate(prog -> {
 
@@ -39,12 +90,12 @@ public class CordaDeterministicValidatorPlugin implements Plugin<Project> {
         substitute(deterministicImplementation, "corda-serialization", DEFAULT_CORDA_VERSION);
         substitute(deterministicImplementation, "corda-core", DEFAULT_CORDA_VERSION);
 
-        javaDeterministicCompileInternal.setClasspath(deterministicImplementation);
-        javaDeterministicCompileInternal.setSource(javaCompileTask.getSource());
+        javaDeterministicCompileTask.setClasspath(deterministicImplementation);
+        javaDeterministicCompileTask.setSource(javaCompileTask.getSource());
 
         final File outputDir = project.file("build/deterministic");
         outputDir.mkdirs();
-        javaDeterministicCompileInternal.setDestinationDir(outputDir);
+        javaDeterministicCompileTask.setDestinationDir(outputDir);
     });
 
    }

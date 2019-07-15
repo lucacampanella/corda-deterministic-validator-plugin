@@ -141,3 +141,4 @@ simple-flow-project/**/*.adoc
 
 # avoid a sample project used for plugin manual testing
 simple-flow-project-manual-tests/*
+jdk/
