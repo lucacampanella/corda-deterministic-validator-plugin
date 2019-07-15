@@ -1,0 +1,30 @@
+buildscript {
+    ext {
+        corda_release_group = 'net.corda'
+        corda_release_version = '4.0'
+        corda_gradle_plugins_version = '4.0.42'
+        corda_platform_version = '4'
+        normal_sdk = '1.8'
+    }
+
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath "net.corda.plugins:cordapp:$corda_gradle_plugins_version"
+    }
+}
+
+group 'com.github.lucacampanella'
+version '1.0-SNAPSHOT'
+
+subprojects {
+    apply plugin: 'java'
+
+    sourceCompatibility = 1.8
+
+    tasks.withType(JavaCompile) {
+        options.compilerArgs << "-parameters"
+    }
+}

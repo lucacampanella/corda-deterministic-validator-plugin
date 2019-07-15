@@ -1,0 +1,4 @@
+rootProject.name = 'cordapp-deterministic-tutorial'
+include 'contracts'
+
+includeBuild '../../corda-deterministic-validator-plugin'
