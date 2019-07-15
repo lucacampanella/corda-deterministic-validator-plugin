@@ -18,12 +18,12 @@ script:
 
 deploy:
   - provider: script
-    script: ./gradlew -s publish
+    script: ./gradlew -s publish --info
     skip-cleanup: true
     on:
       branch: master
   - provider: script
-    script: ./gradlew -s publish
+    script: ./gradlew -s publish --info
     skip-cleanup: true
     on:
       tags: true
