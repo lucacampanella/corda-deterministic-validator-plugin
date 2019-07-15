@@ -1,13 +1,7 @@
-package com.github.lucacampanella.plugin;
+package com.github.lucacampanella.cordadeterministicavalidatorplugin;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.tools.ant.taskdefs.Jar;
-import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
-import org.gradle.api.tasks.TaskCollection;
 
 public class CordaDeterministicValidatorPlugin implements Plugin<Project> {
 
