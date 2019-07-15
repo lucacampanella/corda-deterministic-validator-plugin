@@ -7,14 +7,14 @@ git:
 jdk:
 - openjdk8
 
-#addons:
-#  sonarcloud:
-#    organization: "lucacampanella-github"
-#    token:
-#      secure: "T3aTQbqd1ZuCy+ILj0kMHscNfKSY9wu7JfucdsC85M1zPkC6DQOB+kGI1aWHRsbvYS38wpLMYPloS3vapoK/7oEvXje5B1QiG8PKsmHeP2ZPvsz8zXNeVdsCWMVHwYNxMh5hhv7mKevCILstKFKlARsI2p9DRFGhrRo9xHl/muiGOXk66WVkYrv5ANL/cuDcZ2ZqiankiSYB1Je4oaDxHLg/RXZP7R/JH1m48UirVpiw0/b1GbuXaxcV88dr+JZx33f8PFtyqWSc9r8lEpzk/eQdN+3VHG/iI51OdnX29gtxqErRsYw73ji762WNQvfMH+A7UX4LyG9oI9YwTUbfl3qT70qh2n3/SY0x0W6qd5w9O8mtwdy+A6IF2C1YsMhNxV7D6OA0PGRf6p1VxGUp3XSNoFvQOCA4w3xL+uGaD5mZmmXWpcz7G3mFvf9prDIXYlwYd1TEmyk9GxvogKVyyxoUr89sfKCmosBFMKT4lSrw/Kqrmd84Cm1cJppzv9zS46oNL1WuU6751zhYOQEC9xl8S4oehvfFwCFa82ZNDT1F65wzYJAloqOv0qQloETMmLCb8+zM0blH+2A1t4+2aO84+ywZijDQ4azR4+AwNvyMo8iIWk8ZQz/LfER68jguAbD2cYi75JuDxkLgo/+a46Le5DyMn38mqzR+f1tY4O8="
+addons:
+  sonarcloud:
+    organization: "lucacampanella-github"
+    token:
+      secure: "T3aTQbqd1ZuCy+ILj0kMHscNfKSY9wu7JfucdsC85M1zPkC6DQOB+kGI1aWHRsbvYS38wpLMYPloS3vapoK/7oEvXje5B1QiG8PKsmHeP2ZPvsz8zXNeVdsCWMVHwYNxMh5hhv7mKevCILstKFKlARsI2p9DRFGhrRo9xHl/muiGOXk66WVkYrv5ANL/cuDcZ2ZqiankiSYB1Je4oaDxHLg/RXZP7R/JH1m48UirVpiw0/b1GbuXaxcV88dr+JZx33f8PFtyqWSc9r8lEpzk/eQdN+3VHG/iI51OdnX29gtxqErRsYw73ji762WNQvfMH+A7UX4LyG9oI9YwTUbfl3qT70qh2n3/SY0x0W6qd5w9O8mtwdy+A6IF2C1YsMhNxV7D6OA0PGRf6p1VxGUp3XSNoFvQOCA4w3xL+uGaD5mZmmXWpcz7G3mFvf9prDIXYlwYd1TEmyk9GxvogKVyyxoUr89sfKCmosBFMKT4lSrw/Kqrmd84Cm1cJppzv9zS46oNL1WuU6751zhYOQEC9xl8S4oehvfFwCFa82ZNDT1F65wzYJAloqOv0qQloETMmLCb8+zM0blH+2A1t4+2aO84+ywZijDQ4azR4+AwNvyMo8iIWk8ZQz/LfER68jguAbD2cYi75JuDxkLgo/+a46Le5DyMn38mqzR+f1tY4O8="
 
 script:
-  - ./gradlew --no-daemon --scan -s build --info #publishToMavenLocal sonarqube
+  - ./gradlew --no-daemon --scan -s build --info publishToMavenLocal sonarqube
 
 deploy:
   - provider: script
@@ -36,8 +36,8 @@ cache:
   directories:
   - "$HOME/.gradle/caches/"
   - "$HOME/.gradle/wrapper/"
-#env:
-#  global:
+env:
+  global:
   #jfrog key
   - secure: MwQmYbzHC7NqM4NXSD90JuRU9StvTAH6LDzIHus+8IM4e/UvlsxbYatnhqyR2MwCoWhk3wUni08xCKH0gbf7UiysMng+Hiq5ah4UJ+/BSV7GpG5Lf/G4GBHTLN06lBzP0a5CLcMhxRoD969+J8PbmpiITsT+V9emjfVHuCpKGJB1fwhilH0TvpNUJ//FVsd0w8L/hUJpge3FBYVr3JTEApIHCTNmz/LiuGTnDoYNvHk1WPoC3Cpo9kH4r3fiwAPIhswaYP5L/JWdBibqf3DAWZJ4JQfKRYne4JBHWSyh7pAVU9pZn6hgzZkAAz351oIEYMnECss8m9UjtxoH8B22fJsHaoovyyEYnk+9w1hIb/GS2jMoDuYR3Psyj/OtYByzpF4IxvRHnP5EpWKtMKjq0N0/wXVP722W5M1oDmvNa6DXFlYVPnkSkkNhe7yHEL1ZsHFyHs6cRjHOX/N/XQbbj4wAAh/a0bBaI99Fe9r2L3bZRx1IRdmHi/LJmC2oaC7Mpes8EGpDkPBofOBVk0tZJ63sFqeVOgmbYZTfGnSmJ36y+7i9xvOnnEyP/X6glF7M7Wgky48EyOOXjxwWSCHtfkHgrGCb03xOORd5fl2/UIe2JlxVdZdFuXLIMhm7cR4+uCXQJNXACfrwLK5dpgecgsh6waKJ32BflPvuslknDdM=
 #  #grgit
