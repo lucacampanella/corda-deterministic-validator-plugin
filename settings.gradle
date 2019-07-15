@@ -8,3 +8,4 @@
  */
 
 rootProject.name = 'corda-deterministic-validator-plugin'
+include 'plugin'

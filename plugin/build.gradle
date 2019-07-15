@@ -1,0 +1,38 @@
+plugins {
+    id 'java-library'
+    id 'java-gradle-plugin'
+    id "com.gradle.plugin-publish" version "0.10.1"
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation gradleApi()
+}
+
+
+gradlePlugin {
+    plugins {
+        cordaDeterministicValidatorPlugin {
+            id = 'com.github.lucacampanella.plugin.corda-deterministic-validator-plugin'
+            displayName = 'Corda deterministic validator plugin'
+            description = short_description
+            implementationClass = 'com.github.lucacampanella.plugin.CordaDeterministicValidatorPlugin'
+        }
+    }
+}
+
+pluginBundle {
+    website = url
+    vcsUrl = git_url
+    tags = ['validation', 'deterministic', 'corda', 'cordaledger', 'contract', 'compilation']
+}
+
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'Corda deterministic validator plugin',
+                'Implementation-Version': version
+    }
+}
