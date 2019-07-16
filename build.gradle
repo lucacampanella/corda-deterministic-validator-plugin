@@ -52,9 +52,8 @@ allprojects {
     ext {
         corda_release_group = 'net.corda'
         corda_release_version = '4.0'
-        spoon_version = '7.4.0' //TODO: understand how to propagate this
         assertj_version = '3.12.2'
-        junit5_version = '5.4.2'
+        junit5_version = '5.5.0'
         short_description='Compiles code against the deterministic Corda compiler and modules, checking if it is' +
                 ' indeed deterministic'
         url='https://github.com/lucacampanella/corda-deterministic-validator-plugin'
@@ -155,15 +154,15 @@ subprojects {
                 artifact sourcesJar
                 artifact javadocJar
                 pom {
-                    //name = project.name todo: change fro gradle 5
+                    name = project.name
                     description = project.short_description
                     url = project.url
-//                    licenses {
-//                        license {
-//                            name = 'The Apache License, Version 2.0'
-//                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-//                        }
-//                    }
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
                 }
             }
         }
@@ -187,7 +186,6 @@ subprojects {
 
             websiteUrl = project.url
             vcsUrl = project.git_url
-            //githubRepo = project.git_url
             licenses = ['Apache-2.0']
             labels = ['configuration']
             version {
