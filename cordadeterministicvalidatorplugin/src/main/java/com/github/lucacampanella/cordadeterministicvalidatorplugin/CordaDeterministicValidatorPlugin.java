@@ -1,21 +1,18 @@
 package com.github.lucacampanella.cordadeterministicvalidatorplugin;
 
-import org.gradle.api.*;
+import org.gradle.api.GradleException;
+import org.gradle.api.Plugin;
+import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.DependencySubstitutions;
-import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.logging.Logger;
 import org.gradle.api.tasks.Copy;
-import org.gradle.api.tasks.SourceSet;
-import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.compile.JavaCompile;
 
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.nio.file.Paths;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,6 +21,8 @@ public class CordaDeterministicValidatorPlugin implements Plugin<Project> {
     private static final String CORDA_RELAESE_GROUP = "net.corda";
     private static final String DEFAULT_CORDA_VERSION = "4.0";
     private static final String DETERMINISTIC_IDENTIFIER = "-deterministic";
+
+    private static final String BOOTH_CLASSPATH_ARG = "-bootclasspath";
 
     @Override
     public void apply(Project project) {
@@ -87,12 +86,12 @@ public class CordaDeterministicValidatorPlugin implements Plugin<Project> {
         if(!compilerArgs.contains("-parameters")) {
             compilerArgs.add("-parameters");
         }
-        if(compilerArgs.contains("-bootclasspath")) {
-            final int indexOfBoothClasspath = compilerArgs.indexOf("-bootclasspath");
+        if(compilerArgs.contains(BOOTH_CLASSPATH_ARG)) {
+            final int indexOfBoothClasspath = compilerArgs.indexOf(BOOTH_CLASSPATH_ARG);
             compilerArgs.remove(indexOfBoothClasspath);
             compilerArgs.remove(indexOfBoothClasspath);
         }
-        compilerArgs.add("-bootclasspath");
+        compilerArgs.add(BOOTH_CLASSPATH_ARG);
         compilerArgs.add(rtJar.getPath());
         javaDeterministicCompileTask.getOptions().setCompilerArgs(compilerArgs);
 
