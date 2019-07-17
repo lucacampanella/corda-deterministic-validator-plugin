@@ -47,3 +47,8 @@ dependencies {
     deterministicImplementation "net.corda:corda-serialization-deterministic:$your_preferred_version"
 }
 ```
+
+The `compileDeterministicJava` task copies the compiler args (`options.compilerArgs`), from `compileJava` task.
+It also adds `-parameters` and the arguments needed for deterministic compilation. If you want to add compiler 
+arguments only to the `compileDeterministicJava`, just do so using the Gradle DSL.
+The tasks also copies the annotation processors configurations.

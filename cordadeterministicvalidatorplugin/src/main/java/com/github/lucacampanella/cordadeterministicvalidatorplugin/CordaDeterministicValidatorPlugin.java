@@ -13,6 +13,8 @@ import org.gradle.api.tasks.compile.JavaCompile;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 
@@ -77,27 +79,18 @@ public class CordaDeterministicValidatorPlugin implements Plugin<Project> {
 
 
 
+        final JavaCompile javaCompileTask = (JavaCompile) project.getTasks().getByName("compileJava");
         final JavaCompile javaDeterministicCompileTask = project.getTasks()
                 .create("compileDeterministicJava", JavaCompile.class);
         final Configuration deterministicImplementation = project.getConfigurations().create("deterministicImplementation");
-
         javaDeterministicCompileTask.dependsOn(installJdkTask);
-        final List<String> compilerArgs = javaDeterministicCompileTask.getOptions().getCompilerArgs();
-        if(!compilerArgs.contains("-parameters")) {
-            compilerArgs.add("-parameters");
-        }
-        if(compilerArgs.contains(BOOTH_CLASSPATH_ARG)) {
-            final int indexOfBoothClasspath = compilerArgs.indexOf(BOOTH_CLASSPATH_ARG);
-            compilerArgs.remove(indexOfBoothClasspath);
-            compilerArgs.remove(indexOfBoothClasspath);
-        }
-        compilerArgs.add(BOOTH_CLASSPATH_ARG);
-        compilerArgs.add(rtJar.getPath());
-        javaDeterministicCompileTask.getOptions().setCompilerArgs(compilerArgs);
 
         project.afterEvaluate(prog -> {
 
-            final JavaCompile javaCompileTask = (JavaCompile) project.getTasks().getByName("compileJava");
+            setupCompilerArgs(rtJar, javaCompileTask, javaDeterministicCompileTask);
+
+            logger.info("javaDeterministicCompileTask.getOptions().getAllCompilerArgs() = {}",
+                    javaDeterministicCompileTask.getOptions().getAllCompilerArgs());
 
             deterministicImplementation.extendsFrom(project.getConfigurations().getByName("compileClasspath"));
 
@@ -106,12 +99,32 @@ public class CordaDeterministicValidatorPlugin implements Plugin<Project> {
 
             javaDeterministicCompileTask.setClasspath(deterministicImplementation);
             javaDeterministicCompileTask.setSource(javaCompileTask.getSource());
+            javaDeterministicCompileTask.getOptions()
+                    .setAnnotationProcessorPath(javaCompileTask.getOptions().getAnnotationProcessorPath());
 
             final File outputDir = project.file("build/deterministic");
             outputDir.mkdirs();
             javaDeterministicCompileTask.setDestinationDir(outputDir);
         });
 
+    }
+
+    private void setupCompilerArgs(File rtJar, JavaCompile javaCompileTask, JavaCompile javaDeterministicCompileTask) {
+        LinkedHashSet<String> compilerArgsSet = new LinkedHashSet<>(javaCompileTask.getOptions().getCompilerArgs());
+
+        final List<String> compilerArgs = javaDeterministicCompileTask.getOptions().getCompilerArgs();
+
+        if(compilerArgsSet.contains(BOOTH_CLASSPATH_ARG)) {
+            final int indexOfBoothClasspath = compilerArgs.indexOf(BOOTH_CLASSPATH_ARG);
+            compilerArgs.remove(indexOfBoothClasspath);
+            compilerArgs.remove(indexOfBoothClasspath);
+        }
+        compilerArgs.add(BOOTH_CLASSPATH_ARG);
+        compilerArgs.add(rtJar.getPath());
+
+        compilerArgsSet.addAll(compilerArgs);
+        compilerArgsSet.add("-parameters");
+        javaDeterministicCompileTask.getOptions().setCompilerArgs(new ArrayList<>(compilerArgsSet));
     }
 
     private static Optional<Dependency> getDependency(Configuration configuration, String cordaDepName) {
