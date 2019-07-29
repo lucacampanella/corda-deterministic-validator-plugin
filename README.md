@@ -21,7 +21,7 @@ buildscript {
     }
   }
   dependencies {
-    classpath "com.github.lucacampanella::cordadeterministicvalidatorplugin:+"
+    classpath "com.github.lucacampanella:cordadeterministicvalidatorplugin:+"
   }
 }
 
