@@ -52,3 +52,14 @@ The `compileDeterministicJava` task copies the compiler args (`options.compilerA
 It also adds `-parameters` and the arguments needed for deterministic compilation. If you want to add compiler 
 arguments only to the `compileDeterministicJava`, just do so using the Gradle DSL.
 The tasks also copies the annotation processors configurations.
+
+Be careful:
+The Corda Determinisc JDK doesn't currently support lambdas. If you have lambdas in your code, you'll probably
+have a problem similar to:
+```
+An exception has occurred in the compiler [...]
+com.sun.tools.javac.code.Symbol$CompletionFailure: class file for java.lang.invoke.MethodType not found
+
+```
+If this is the case you can either exchange lambdas with anonymous classes or ignore the failure of the validation,
+knowing the only problem are lambdas.
